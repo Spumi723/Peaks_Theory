@@ -33,15 +33,23 @@ OUTPUT = Path(filename + ".csv")
 BETA_NG = -2.0
 
 # Define the Power spectrum P(k)
-def power_spectrum(k):
-    A, n, R_f = 1e-1, 0, 1.0
+def dimensionless_power_spectrum(k):
+    A, n, R_f = 1e-2, 3, 1.0
     return A * np.asarray(k)**n * np.exp(-(np.asarray(k) * R_f)**2)
+
 
 # Integration limits for spectral moments: choose to cover the support of P(k).
 K_MIN = 0.0
 K_MAX = 30.0
 # --------------------------------------------------------------------------
 
+"""
+We use an extra function because initially I built the code around the power spectrum since in BBKS it is used
+more often that the dimensionless one, but since the latter is more meaninful for the user, I added a function 
+to convert it to the power spectrum.
+"""
+def power_spectrum(k):
+    return dimensionless_power_spectrum(k) * (2*np.pi**2) / k**3
 
 def evaluate_pk(k):
     """Evaluate P(k) consistently for scalar integration and FFT arrays."""

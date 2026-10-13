@@ -21,16 +21,16 @@ from scipy.ndimage import maximum_filter
 # ---------------------------- USER SETTINGS -------------------------------
 N = 256                       # grid cells per side
 L = 40.0                      # physical box length
-N_REALIZATIONS = 2500         # number of independent realizations
+N_REALIZATIONS = 5000         # number of independent realizations
 SEED = None                   # integer for random reproducibility
 PEAK_THRESHOLD = 2.4          # peak height threshold to save the profile
 MIN_SEPARATION = 2            # local-maximum finder neighbourhood radius, in cells
-R_MAX_RSTAR = 5.0             # maximum radius for the saved profile, in units of R_star
+R_MAX_RSTAR = 6.0             # maximum radius for the saved profile, in units of R_star
 NORMALIZATION = "theory"       # "sample" (per realization) or "theory"
-filename = "test"        # output CSV file
+filename = "peaks_beta_0"        # output CSV file
 OUTPUT = Path(filename + ".csv")
 
-BETA_NG = -2.0
+BETA_NG = 0.0
 
 # Define the Power spectrum P(k)
 def dimensionless_power_spectrum(k):
@@ -99,6 +99,7 @@ def generate_field(rng, sqrt_pk, n, box_length):
     fourier = np.fft.fftn(white) * sqrt_pk / (box_length/n)**1.5
     fourier[0, 0, 0] = 0
     field = np.fft.ifftn(fourier).real
+    # Apply a simple local transformation to introduce non-Gaussianity, if requested.
     if not BETA_NG == 0:
         field = -1/BETA_NG * np.log(1 - BETA_NG * field)
         field -= np.average(field)
